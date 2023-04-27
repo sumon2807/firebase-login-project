@@ -1,5 +1,5 @@
-import React, { createContext, useState } from 'react';
-import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import React, { createContext, useEffect, useState } from 'react';
+import { createUserWithEmailAndPassword, getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "firebase/auth";
 import app from '../Firebase/firebase.config';
 
 
@@ -20,6 +20,19 @@ const AuthProvider = ({children}) => {
     const logOut=()=>{
         return signOut(auth);
     }
+
+// objerved on state change (useEffect hook for outside api call)
+
+    useEffect(()=>{
+        const unsubscribe=onAuthStateChanged(auth, currentUser=>{
+            console.log('auth state changed', currentUser);
+            setUser(currentUser);
+        })
+        return ()=>{
+            unsubscribe();
+        }
+    },[])
+
     const authInfo={
         user,
         createUser,
